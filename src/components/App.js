@@ -1,40 +1,47 @@
+// src/App.js
 import React, { useState } from "react";
-import Question from "./Question";
-import quiz from "../data/quiz";
+import Question from "./components/Question";
+
+const quizData = [
+  {
+    id: 1,
+    prompt: "What is 2 + 2?",
+    answers: ["1", "2", "3", "4"],
+    correctIndex: 3,
+  },
+  {
+    id: 2,
+    prompt: "What is the capital of France?",
+    answers: ["Berlin", "London", "Paris", "Madrid"],
+    correctIndex: 2,
+  },
+  // Add more questions as needed
+];
 
 function App() {
-  const [questions, setQuestions] = useState(quiz);
-  const [currentQuestionId, setCurrentQuestion] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const currentQuestion = questions.find((q) => q.id === currentQuestionId);
 
-  function handleQuestionAnswered(correct) {
-    if (currentQuestionId < questions.length) {
-      setCurrentQuestion((currentQuestionId) => currentQuestionId + 1);
-    } else {
-      setCurrentQuestion(null);
+  function handleAnswered(isCorrect) {
+    if (isCorrect) {
+      setScore((s) => s + 1);
     }
-    if (correct) {
-      setScore((score) => score + 1);
+    // move to next question or loop
+    const next = currentIndex + 1;
+    if (next < quizData.length) {
+      setCurrentIndex(next);
+    } else {
+      // Optionally: show results or reset
+      setCurrentIndex(0);
     }
   }
 
   return (
-    <main>
-      <section>
-        {currentQuestion ? (
-          <Question
-            question={currentQuestion}
-            onAnswered={handleQuestionAnswered}
-          />
-        ) : (
-          <>
-            <h1>Game Over</h1>
-            <h2>Total Correct: {score}</h2>
-          </>
-        )}
-      </section>
-    </main>
+    <div className="App">
+      <h1>Trivia Quiz</h1>
+      <p>Score: {score}</p>
+      <Question question={quizData[currentIndex]} onAnswered={handleAnswered} />
+    </div>
   );
 }
 
